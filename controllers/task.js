@@ -1,7 +1,9 @@
+import ErrorHandler from '../middlewares/error.js';
 import { Task } from '../models/task.js'
 
 export const newTask = async (req, res) => {
-  const { title, description } = req.body
+  try{
+    const { title, description } = req.body
 
   await Task.create({ title, description, user: req.user })
   
@@ -9,10 +11,14 @@ export const newTask = async (req, res) => {
     success: true,
     message: 'Task created successfully'
   });
+  } catch (error) {
+    next(error);
+  }
 
 }
 
 export const getMyTask = async (req, res) => {
+   try {
     const userid = req.user._id;
     
     const tasks = await Task.find({ user: userid });
@@ -22,38 +28,35 @@ export const getMyTask = async (req, res) => {
         tasks
     })
 
+   } catch (error) {
+    next(error);
+   }
 }
 
-export const updateTask = async (req, res) => {
+export const updateTask = async (req, res, next) => {
+    try {
+        const task = await Task.findById(req.params.id);
 
-    const task = await Task.findById(req.params.id);
-
-    if (!task) {
-        return res.status(404).json({ 
-            success: false,
-            message: "Task not found"
+        if (!task) return next(new ErrorHandler("task not found", 404));
+        // do all changes here
+        task.isCompleted = !task.isCompleted;
+    
+        await task.save();
+    
+        res.status(200).json({
+            success: true,
+            message: 'Task updated successfully'
         })
+    } catch(error) {
+        next(error);
     }
-    // do all changes here
-    task.isCompleted = !task.isCompleted;
-
-    await task.save();
-
-    res.status(200).json({
-        success: true,
-        message: 'Task updated successfully'
-    })
 }
 
-export const deleteTask = async (req, res) => {
+export const deleteTask = async (req, res, next) => {
+   try {
     const task = await Task.findById(req.params.id);
 
-    if (!task) {
-        return res.status(404).json({ 
-            success: false,
-            message: "Task not found"
-        })
-    }
+    if (!task) return next(new Error())
    
     await task.deleteOne();
     
@@ -61,4 +64,7 @@ export const deleteTask = async (req, res) => {
         success: true, 
         message: 'Task deleted successfully'
     })
+   } catch (error) {
+    next(error);
+   }
 }
