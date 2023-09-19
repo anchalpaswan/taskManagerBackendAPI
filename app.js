@@ -4,6 +4,8 @@ import { config } from 'dotenv'
 import userRouter from './routes/user.js'
 import taskRouter from './routes/task.js'
 import ErrorHandler from './middlewares/error.js';
+import cors from 'cors';
+
 
 export const app = express();
 
@@ -14,6 +16,11 @@ config({
 // Using middlewares
 app.use(express.json());
 app.use(cookieParser());
+app.use(cors({
+    origin: [process.env.FRONTENT_URL],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+}))
 
 // Using Routes
 app.use('/api/v1/users', userRouter);
