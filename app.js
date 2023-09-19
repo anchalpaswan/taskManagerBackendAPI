@@ -3,7 +3,7 @@ import cookieParser from 'cookie-parser'
 import { config } from 'dotenv'
 import userRouter from './routes/user.js'
 import taskRouter from './routes/task.js'
-import ErrorHandler from './middlewares/error.js';
+import { errorMiddleware } from './middlewares/error.js';
 import cors from 'cors';
 
 
@@ -27,4 +27,4 @@ app.use('/api/v1/users', userRouter);
 app.use('/api/v1/task', taskRouter);
 
 // middleware for error
-app.use(ErrorHandler)
+app.use(errorMiddleware)
