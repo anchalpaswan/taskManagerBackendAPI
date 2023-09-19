@@ -75,6 +75,6 @@ export const logout = (req, res, next) => {
       message: 'Logout successfully',
     })
   } catch (error) {
-    next(error)
+    next(error);
   }
 }
