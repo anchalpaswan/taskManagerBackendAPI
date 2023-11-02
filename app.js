@@ -22,6 +22,12 @@ app.use(cors({
     credentials: true,
 }))
 
+// added for access error
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    next();
+});
+
 // Using Routes
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/task', taskRouter);
